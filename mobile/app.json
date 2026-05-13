@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "workout-mobile",
+    "slug": "workout-mobile",
+    "scheme": "workout-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mohdafzal7534.workoutmobile"
+    },
+    "android": {
+      "package": "com.mohdafzal7534.workoutmobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2ccb4589-92d7-4c9c-81c7-5a1728f30657"
+      }
+    }
+  }
+}
