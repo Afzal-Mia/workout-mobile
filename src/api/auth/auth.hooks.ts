@@ -2,7 +2,7 @@ import { useAppMutation } from "../../lib/react-query/useAppMutation";
 import { apiClient } from "../api-client";
 import { useAuthStore } from "../../store/useAuthStore";
 import { authEndpoints } from "./auth.endpoints";
-import { LoginDto, SignupDto, ForgotPasswordDto, VerifyOtpDto, ResetPasswordWithOtpDto, AuthResponse } from "./auth.types";
+import { LoginDto, SignupDto, ForgotPasswordDto, VerifyOtpDto, ResetPasswordWithOtpDto, ResetPasswordDto, AuthResponse } from "./auth.types";
 
 const authKeys = {
   all: ["auth"] as const,
@@ -86,5 +86,13 @@ export const useGoogleLogin = () => {
       return res;
     },
     invalidateKeys: [authKeys.user()],
+  });
+};
+
+export const useResetPassword = () => {
+  return useAppMutation({
+    mutationFn: async (dto: ResetPasswordDto): Promise<{ message: string }> => {
+      return apiClient.patch(authEndpoints.resetPassword, dto);
+    },
   });
 };

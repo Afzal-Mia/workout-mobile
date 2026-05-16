@@ -4,6 +4,8 @@ import { View, TextInput, TouchableOpacity, Text, Pressable, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BottomSheet } from '../../components/ui/BottomSheet';
+import { ResetPasswordForm } from '../../components/auth/ResetPasswordForm';
 
 export default function TabLayout() {
   const pathname = usePathname();
@@ -11,6 +13,7 @@ export default function TabLayout() {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
 
   // Check if we are on the home screen to show search
   // In Expo Router (tabs) group, the path for home.tsx is /home
@@ -86,7 +89,7 @@ export default function TabLayout() {
 
             <TouchableOpacity
               className="px-4 py-4 border-b border-border flex-row items-center active:bg-muted"
-              onPress={() => { setIsDropdownOpen(false); /* Add password reset navigation */ }}
+              onPress={() => { setIsDropdownOpen(false); setIsResetPasswordOpen(true); }}
             >
               <Ionicons name="key-outline" size={20} color="#171717" />
               <Text className="text-foreground font-semibold ml-3">Reset Password</Text>
@@ -156,6 +159,10 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+
+      <BottomSheet isVisible={isResetPasswordOpen} onClose={() => setIsResetPasswordOpen(false)}>
+        <ResetPasswordForm onSuccess={() => setIsResetPasswordOpen(false)} />
+      </BottomSheet>
     </View>
   );
 }
