@@ -5,6 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { verifyOtpSchema, resetPasswordWithOtpSchema, useVerifyOtp, useResetPasswordWithOtp, useResendOtp } from '../../api/auth';
 import { toast } from '../../lib/toast';
 import { router } from 'expo-router';
+import { Input } from '../ui/Input';
+import { Button } from '../ui/Button';
+import colors from '../../constants/colors';
 
 type VerifyOtpFormProps = {
   mode: 'verification' | 'reset-password';
@@ -103,24 +106,22 @@ export function VerifyOtpForm({ mode, email, onVerified }: VerifyOtpFormProps) {
 
   return (
     <View className="gap-y-6 w-full">
-      <View>
-        <Text className="text-sm font-semibold text-gray-700 mb-2">Email</Text>
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              className="bg-white border border-border rounded-xl p-4 text-base text-foreground opacity-70"
-              placeholder="Confirm your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onChangeText={onChange}
-              value={value}
-              editable={false}
-            />
-          )}
-        />
-      </View>
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value } }) => (
+          <Input
+            label="Email"
+            placeholder="Confirm your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            onChangeText={onChange}
+            value={value}
+            editable={false}
+            className="opacity-70"
+          />
+        )}
+      />
 
       <View>
         <Text className="text-sm font-semibold text-gray-700 mb-4">Verification Code</Text>
@@ -129,7 +130,8 @@ export function VerifyOtpForm({ mode, email, onVerified }: VerifyOtpFormProps) {
             <View key={index} className="w-[14%] aspect-square bg-white border border-border rounded-xl items-center justify-center">
               <TextInput
                 ref={(ref) => { otpInputs.current[index] = ref; }}
-                className="text-2xl font-bold text-foreground text-center w-full h-full"
+                className="text-2xl font-bold text-center w-full h-full"
+                style={{ color: colors.foreground }}
                 keyboardType="number-pad"
                 maxLength={1}
                 value={otpValue[index] || ''}
@@ -143,36 +145,28 @@ export function VerifyOtpForm({ mode, email, onVerified }: VerifyOtpFormProps) {
       </View>
 
       {mode === 'reset-password' && (
-        <View>
-          <Text className="text-sm font-semibold text-gray-700 mb-2">New Password</Text>
-          <Controller
-            control={control}
-            name="newPassword"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                className="bg-white border border-border rounded-xl p-4 text-base text-foreground"
-                placeholder="Enter new password"
-                placeholderTextColor="#71717a"
-                secureTextEntry
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-          />
-          {errors.newPassword && <Text className="text-destructive text-xs mt-1">{errors.newPassword?.message as string}</Text>}
-        </View>
+        <Controller
+          control={control}
+          name="newPassword"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="New Password"
+              placeholder="Enter new password"
+              isPassword
+              onChangeText={onChange}
+              value={value}
+              error={errors.newPassword?.message as string}
+            />
+          )}
+        />
       )}
 
-      <TouchableOpacity 
-        onPress={handleSubmit(onSubmit)} 
-        disabled={isPending}
-        activeOpacity={0.8}
-        className="bg-primary py-4 rounded-xl items-center shadow-lg mt-2"
-      >
-        <Text className="text-white font-bold text-lg">
-          {isPending ? "Processing..." : (mode === 'verification' ? "Verify Email" : "Reset Password")}
-        </Text>
-      </TouchableOpacity>
+      <Button
+        label={mode === 'verification' ? "Verify Email" : "Reset Password"}
+        onPress={handleSubmit(onSubmit)}
+        isLoading={isPending}
+        className="mt-2"
+      />
 
       <View className="items-center mt-4">
         <TouchableOpacity 
@@ -180,7 +174,10 @@ export function VerifyOtpForm({ mode, email, onVerified }: VerifyOtpFormProps) {
           disabled={!canResend || isResending}
           className="flex-row items-center"
         >
-          <Text className={`font-semibold ${canResend ? 'text-accent' : 'text-muted-foreground'}`}>
+          <Text
+            className="font-semibold"
+            style={{ color: canResend ? colors.accent : colors.mutedForeground }}
+          >
             {isResending ? "Sending..." : "Resend OTP"}
           </Text>
           {!canResend && (

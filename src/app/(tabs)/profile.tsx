@@ -1,35 +1,125 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { useGetMe, useUpdateProfile } from "../../api/user";
+import { useAuthStore } from "../../store/useAuthStore";
+import { toast } from "../../lib/toast";
+import { ProfileHeader } from "../../components/profile/ProfileHeader";
+import { ProfileStats } from "../../components/profile/ProfileStats";
+import { ProfileInfoCard } from "../../components/profile/ProfileInfoCard";
+import { ProfileOptionsList } from "../../components/profile/ProfileOptionsList";
+import { ProfileEditForm } from "../../components/profile/ProfileEditForm";
+import { ProfileSkeleton } from "../../components/profile/ProfileSkeleton";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{
+    uri: string;
+    name: string;
+    type: string;
+  } | null>(null);
+
+  const { data, isLoading, refetch } = useGetMe();
+  const userProfile = data?.user;
+  const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
+  const authUser = useAuthStore((state) => state.user);
+
+  const handleImageUpload = (imageObj: { uri: string; name: string; type: string }) => {
+    setSelectedImage(imageObj);
+
+    // We send an empty/undefined dto if only changing image (so backend doesn't overwrite existing profile values)
+    const currentValues = {
+      age: userProfile?.age,
+      gender: userProfile?.gender,
+      height: userProfile?.height,
+      weight: userProfile?.weight,
+      difficultyLevel: userProfile?.difficultyLevel,
+      fitnessGoal: userProfile?.fitnessGoal,
+    };
+
+    updateProfile(
+      { dto: currentValues, file: imageObj },
+      {
+        onSuccess: () => {
+          toast.success("Profile photo updated successfully!");
+          setSelectedImage(null);
+          refetch();
+        },
+        onError: (err: any) => {
+          toast.error(err.message || "Failed to update profile photo");
+          setSelectedImage(null);
+        },
+      }
+    );
+  };
+
+  const handleLogout = () => {
+    useAuthStore.getState().logout();
+    toast.success("Successfully signed out!");
+    router.replace("/auth");
+  };
+
+  if (isLoading && !userProfile) {
+    return <ProfileSkeleton />;
+  }
+
+  const displayName = userProfile?.name || authUser?.name || "Fitness Enthusiast";
+  const displayEmail = userProfile?.email || authUser?.email || "";
+  const displayAvatar = (selectedImage?.uri || userProfile?.profileImage || authUser?.profileImage) ?? null;
+
   return (
-    <View className="flex-1 bg-white p-6">
-      <View className="items-center mb-10 mt-4">
-        <View className="w-24 h-24 rounded-full bg-muted border-4 border-white shadow-lg items-center justify-center mb-4">
-          <Text className="text-3xl">👤</Text>
-        </View>
-        <Text className="text-2xl font-bold text-foreground">John Doe</Text>
-        <Text className="text-muted-foreground">john.doe@example.com</Text>
-      </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 bg-white"
+    >
+      <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+        {/* Header/Avatar Section */}
+        <ProfileHeader
+          displayName={displayName}
+          displayEmail={displayEmail}
+          displayAvatar={displayAvatar}
+          isUpdating={isUpdating}
+          onImageSelected={handleImageUpload}
+        />
 
-      <View className="bg-card rounded-2xl border border-border overflow-hidden mb-6">
-        <View className="p-4 border-b border-border flex-row items-center justify-between">
-          <Text className="text-foreground font-medium">Personal Information</Text>
-          <Text className="text-primary text-sm font-bold">Edit</Text>
-        </View>
-        <View className="p-4 border-b border-border flex-row items-center justify-between">
-          <Text className="text-foreground font-medium">Notification Settings</Text>
-          <Text className="text-muted-foreground">Enabled</Text>
-        </View>
-        <View className="p-4 flex-row items-center justify-between">
-          <Text className="text-foreground font-medium">Privacy Policy</Text>
-          <Text className="text-muted-foreground">→</Text>
-        </View>
-      </View>
+        {isEditing ? (
+          /* EDIT MODE Form Component */
+          <ProfileEditForm
+            userProfile={userProfile}
+            onCancel={() => setIsEditing(false)}
+            onSuccess={() => {
+              setIsEditing(false);
+              refetch();
+            }}
+          />
+        ) : (
+          /* VIEW MODE Components */
+          <View className="gap-y-6 pb-12">
+            {/* Horizontal Stats Section */}
+            <ProfileStats
+              age={userProfile?.age}
+              height={userProfile?.height}
+              weight={userProfile?.weight}
+            />
 
-      <View className="bg-destructive/10 p-4 rounded-2xl items-center">
-        <Text className="text-destructive font-bold">Delete Account</Text>
-      </View>
-    </View>
+            {/* Info Cards (Gender, Difficulty, Fitness Goals) */}
+            <ProfileInfoCard
+              gender={userProfile?.gender}
+              difficulty={userProfile?.difficultyLevel}
+              fitnessGoals={userProfile?.fitnessGoal}
+              onEditPress={() => setIsEditing(true)}
+            />
+
+
+            <ProfileOptionsList onLogout={handleLogout} />
+          </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

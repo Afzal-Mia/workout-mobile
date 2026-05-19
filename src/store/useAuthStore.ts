@@ -18,6 +18,7 @@ type AuthState = {
 
 type AuthActions = {
   setAuth: (user: AuthUser, accessToken: string) => void;
+  updateUser: (user: Partial<AuthUser>) => void;
   logout: () => void;
   setHasHydrated: (v: boolean) => void;
 };
@@ -32,6 +33,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       setAuth: (user, accessToken) =>
         set({ user, accessToken, isAuthenticated: true }),
+
+      updateUser: (updatedUser) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updatedUser } : null,
+        })),
 
       logout: () =>
         set({ user: null, accessToken: null, isAuthenticated: false }),

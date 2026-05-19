@@ -13,6 +13,13 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // ✅ Handle React Native FormData correctly to prevent client-side Network Errors
+  if (config.data instanceof FormData) {
+    config.headers["Content-Type"] = "multipart/form-data";
+    config.transformRequest = (data) => data;
+  }
+
   return config;
 });
 

@@ -4,7 +4,7 @@ import { View, TextInput, TouchableOpacity, Text, Pressable, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BottomSheet } from '../../components/ui/BottomSheet';
+import { BottomSheet } from '../../components/common/BottomSheet';
 import { ResetPasswordForm } from '../../components/auth/ResetPasswordForm';
 
 export default function TabLayout() {
