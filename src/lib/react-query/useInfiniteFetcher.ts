@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 
 export function useInfiniteFetcher<TData>({
   queryKey,
@@ -11,9 +11,9 @@ export function useInfiniteFetcher<TData>({
   getNextPageParam: (lastPage: TData) => number | undefined;
   options?: any;
 }) {
-  return useInfiniteQuery({
+  return useInfiniteQuery<TData, Error, InfiniteData<TData, number>, readonly unknown[], number>({
     queryKey,
-    queryFn,
+    queryFn: (context) => queryFn({ pageParam: context.pageParam }),
     getNextPageParam,
     initialPageParam: 1,
     ...options,

@@ -28,6 +28,12 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     console.error("API Error:", error.message, error.config?.url, error.response?.data);
+    // ✅ No internet / network error
+    if (!error.response) {
+      return Promise.reject(
+        new ApiError("No internet connection,Check your connection and try again", 0)
+      );
+    }
     const message = error.response?.data?.message || "Something went wrong";
     const status = error.response?.status;
 

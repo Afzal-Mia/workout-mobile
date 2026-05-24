@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-na
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { toast } from '../../lib/toast';
-import { BottomSheet } from '../common/BottomSheet';
+import { ImagePickerSheet } from '../common/ImagePickerSheet';
 
 interface ProfileHeaderProps {
   displayName: string;
@@ -122,39 +122,14 @@ export function ProfileHeader({
         {displayEmail}
       </Text>
 
-      {/* Modern Sleek Photo Picker Action Menu using Reusable BottomSheet */}
-      <BottomSheet isVisible={imageModalVisible} onClose={() => setImageModalVisible(false)}>
-        <Text className="text-foreground text-lg font-bold text-center mb-6">
-          Update Profile Photo
-        </Text>
-
-        <View className="gap-y-3">
-          <TouchableOpacity
-            onPress={handleTakePhoto}
-            className="bg-primary flex-row items-center justify-center py-4 rounded-xl shadow active:opacity-90"
-          >
-            <Ionicons name="camera" size={22} color="white" />
-            <Text className="text-white font-bold text-base ml-2">Take Photo</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleChooseFromLibrary}
-            className="bg-white border border-border flex-row items-center justify-center py-4 rounded-xl active:bg-slate-50"
-          >
-            <Ionicons name="images" size={22} color="#237227" />
-            <Text className="text-primary font-bold text-base ml-2">
-              Choose from Gallery
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setImageModalVisible(false)}
-            className="bg-slate-100 flex-row items-center justify-center py-4 rounded-xl mt-2 active:bg-slate-200"
-          >
-            <Text className="text-slate-700 font-bold text-base">Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </BottomSheet>
+      {/* Reusable Photo Picker Sheet */}
+      <ImagePickerSheet
+        isVisible={imageModalVisible}
+        title="Update Profile Photo"
+        onTakePhoto={handleTakePhoto}
+        onChooseFromGallery={handleChooseFromLibrary}
+        onClose={() => setImageModalVisible(false)}
+      />
     </View>
   );
 }

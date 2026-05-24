@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomSheet } from '../../components/common/BottomSheet';
+import { ConfirmationModal } from '../../components/common/ConfirmationModal';
 import { ResetPasswordForm } from '../../components/auth/ResetPasswordForm';
+import { useWorkoutStore } from '../../store/useWorkoutStore';
 
 export default function TabLayout() {
   const pathname = usePathname();
@@ -14,6 +16,19 @@ export default function TabLayout() {
   const user = useAuthStore((state) => state.user);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const setSearchQuery = useWorkoutStore((state) => state.setSearchQuery);
+  const [localSearch, setLocalSearch] = useState('');
+
+  // Debounce search update
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(localSearch);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [localSearch, setSearchQuery]);
 
   // Check if we are on the home screen to show search
   // In Expo Router (tabs) group, the path for home.tsx is /home
@@ -45,6 +60,8 @@ export default function TabLayout() {
                   placeholderTextColor="#717a77ff"
                   className="flex-1 ml-2 text-foreground text-sm"
                   style={{ paddingVertical: 0 }}
+                  value={localSearch}
+                  onChangeText={setLocalSearch}
                 />
               </View>
             ) : (
@@ -97,7 +114,7 @@ export default function TabLayout() {
 
             <TouchableOpacity
               className="px-4 py-4 flex-row items-center active:bg-muted"
-              onPress={handleLogout}
+              onPress={() => { setIsDropdownOpen(false); setShowLogoutConfirm(true); }}
             >
               <Ionicons name="log-out-outline" size={20} color="#ef4444" />
               <Text className="text-destructive font-semibold ml-3">Logout</Text>
@@ -105,6 +122,14 @@ export default function TabLayout() {
           </View>
         </View>
       )}
+
+      <ConfirmationModal
+        isVisible={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to logout?"
+      />
 
       <Tabs
         screenOptions={{

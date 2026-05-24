@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { View, TouchableOpacity, Text as RNText } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateProfileSchema, UpdateProfileDto, useUpdateProfile } from "../../api/user";
+import { updateProfileSchema, UpdateProfileDto, useUpdateProfile } from "../../api";
 import { toast } from "../../lib/toast";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
@@ -41,7 +41,7 @@ export function ProfileEditForm({
     watch,
     formState: { errors },
   } = useForm<UpdateProfileDto>({
-    resolver: zodResolver(updateProfileSchema),
+    resolver: zodResolver(updateProfileSchema) as Resolver<UpdateProfileDto>,
     defaultValues: {
       age: undefined,
       gender: undefined,

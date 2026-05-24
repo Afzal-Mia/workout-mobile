@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text as RNText } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, useLogin } from '../../api/auth';
+import { loginSchema, useLogin } from '../../api';
 import { toast } from '../../lib/toast';
 import { router } from 'expo-router';
 import { Input } from '../ui/Input';

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signupSchema, useSignup } from '../../api/auth';
+import { signupSchema, useSignup } from '../../api';
 import { toast } from '../../lib/toast';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';

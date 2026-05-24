@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
-import { useResetPassword, resetPasswordSchema, ResetPasswordDto } from '../../api/auth';
+import { useResetPassword, resetPasswordSchema, ResetPasswordDto } from '../../api';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 

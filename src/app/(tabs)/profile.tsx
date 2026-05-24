@@ -5,7 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useGetMe, useUpdateProfile } from "../../api/user";
+import { useGetMe, useUpdateProfile } from "../../api";
 import { useAuthStore } from "../../store/useAuthStore";
 import { toast } from "../../lib/toast";
 import { ProfileHeader } from "../../components/profile/ProfileHeader";
